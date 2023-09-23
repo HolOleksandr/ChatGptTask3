@@ -1,0 +1,51 @@
+﻿@page "/login"
+@using FinanceManagement.Blazor.Server.Services.Interfaces;
+@using FinanceManagement.Models.Authorization;
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+
+<EditForm Model="@loginModel" OnValidSubmit="LoginUser">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <InputText class="form-control" id="email" @bind-Value="@loginModel.Email" />
+        <ValidationMessage For="@(()=>loginModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <InputText type="password" class="form-control" id="password" @bind-Value="@loginModel.Password" />
+        <ValidationMessage For="@(()=>loginModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+@code {
+    private UserLoginModel loginModel = new();
+    private string? errorMessage;
+
+    private async Task LoginUser()
+    {
+        errorMessage = null;
+        var result = await AccountService.LoginAsync(loginModel.Email, loginModel.Password);
+        if (result.Success)
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+            errorMessage = result.Message;
+        }
+    }
+}

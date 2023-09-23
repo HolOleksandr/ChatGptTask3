@@ -1,0 +1,44 @@
+﻿@page "/transactions"
+@using FinanceManagement.Blazor.Server.Services.Interfaces;
+@using FinanceManagement.Models.DTOs;
+@inject ITransactionsService TransactionsService
+
+<h3>Transactions</h3>
+
+@if (transactions == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in transactions)
+            {
+                <tr>
+                    <td>@transaction.Id</td>
+                    <td>@transaction.Description</td>
+                    <td>@transaction.Amount</td>
+                    <td>@transaction.Date</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IList<FinancialTransactionDTO>? transactions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        transactions = await TransactionsService.GetAllTransactionsAsync();
+    }
+}
